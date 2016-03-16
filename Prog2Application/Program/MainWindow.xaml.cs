@@ -41,9 +41,75 @@ namespace Program
             }
         }
 
+        private void QuicksortC(ref List<string> elements, int left, int right)
+        {
+            int i = left, j = right;
+            string pivot = elements[(left + right) / 2];
+
+            while (i <= j)
+            {
+                while (elements[i].CompareTo(pivot) < 0)
+                    i++;
+                while (elements[j].CompareTo(pivot) > 0)
+                    j--;
+                if (i <= j)
+                {
+                    string tmpEle = elements[i];
+                    elements[i] = elements[j];
+                    elements[j] = tmpEle;
+                    i++;
+                    j--;
+                }
+            }
+
+            if (left < j)
+                QuicksortC(ref elements, left, j);
+            if (i < right)
+                QuicksortC(ref elements, i, right);
+        }
+
+        private void QuicksortD(ref List<string> elements, int left, int right)
+        {
+            int i = left, j = right;
+            string pivot = elements[(left + right) / 2];
+
+            while (i <= j)
+            {
+                while (elements[i].CompareTo(pivot) > 0)
+                    i++;
+                while (elements[j].CompareTo(pivot) < 0)
+                    j--;
+                if (i <= j)
+                {
+                    string tmpEle = elements[i];
+                    elements[i] = elements[j];
+                    elements[j] = tmpEle;
+                    i++;
+                    j--;
+                }
+            }
+
+            if (left < j)
+                QuicksortD(ref elements, left, j);
+            if (i < right)
+                QuicksortD(ref elements, i, right);
+        }
+
+        private void Sauvegarder()
+        {
+            if (donneesContents.Count > 0)
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+                    foreach (string item in donneesContents)
+                        writer.WriteLine(item);
+                }
+                
+            }
+        }
+
         private void Read_File_Button_Click(object sender, RoutedEventArgs e)
         {
-            donneesContents.Clear();
             bool? isDiagOpen = false;
             OpenFileDialog fileDiag = new OpenFileDialog();
             isDiagOpen = fileDiag.ShowDialog();
@@ -54,6 +120,8 @@ namespace Program
                 filepath = fileDiag.FileName;
             }
 
+            donneesContents.Clear();
+
             using (StreamReader reader = new StreamReader(filepath))
                 while (!reader.EndOfStream)
                     donneesContents.Add(reader.ReadLine());
@@ -63,6 +131,11 @@ namespace Program
 
         private void Quit_Button_Click(object sender, RoutedEventArgs e)
         {
+            MessageBoxResult boxResult = MessageBox.Show("Voulez-vous sauvegarder?", "Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (boxResult == MessageBoxResult.Yes)
+                Sauvegarder();
+            else if (boxResult == MessageBoxResult.Cancel)
+                return;
             Application.Current.Shutdown();
         }
 
@@ -85,15 +158,16 @@ namespace Program
         {
             string toAdd = "";
 
-            toAdd += Name_Textbox.Text;
-            toAdd += " " + Fam_Name_Textbox.Text;
-            toAdd += " " + Expenses_Textbox.Text;
+            toAdd += Name_Textbox.Text + " " + Fam_Name_Textbox.Text + " " + Expenses_Textbox.Text;
 
             donneesContents.Add(toAdd);
 
             ActualiserListe();
 
             Display_Box.SelectedIndex = Display_Box.Items.Count - 1;
+
+            Ascending_Order_Radio.IsChecked = false;
+            Descending_Order_Radio.IsChecked = false;
         }
 
         private void Modify_Button_Click(object sender, RoutedEventArgs e)
@@ -109,6 +183,9 @@ namespace Program
             donneesContents[index] = toAdd;
 
             ActualiserListe();
+
+            Ascending_Order_Radio.IsChecked = false;
+            Descending_Order_Radio.IsChecked = false;
         }
 
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
@@ -123,6 +200,27 @@ namespace Program
                 Display_Box.SelectedIndex = index - 1;
             else
                 Display_Box.SelectedIndex = index;
+        }
+
+        private void Ascending_Order_Radio_Checked(object sender, RoutedEventArgs e)
+        {
+            QuicksortC(ref donneesContents, 0, donneesContents.Count - 1);
+            ActualiserListe(); 
+        }
+
+        private void Descending_Order_Radio_Checked(object sender, RoutedEventArgs e)
+        {
+            QuicksortD(ref donneesContents, 0, donneesContents.Count - 1);
+            ActualiserListe();
+        }
+
+        private void Save_Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool? isDiagOpen = false;
+            SaveFileDialog fileDiag = new SaveFileDialog();
+            isDiagOpen = fileDiag.ShowDialog();
+            filepath = fileDiag.FileName;
+            Sauvegarder();
         }
     }
 }
