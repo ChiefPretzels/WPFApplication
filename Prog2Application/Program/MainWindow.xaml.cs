@@ -22,12 +22,14 @@ namespace Program
     /// </summary>
     public partial class MainWindow : Window
     {
-        string filepath = @"C:\";
+        string filepath = "";
         List<string> donneesContents = new List<string>(); //Contient les données du fichier de données
         public MainWindow()
         {
             InitializeComponent();
             Filepath_Textbox.IsReadOnly = true;
+            ToggleEnable(false);
+            Delete_Button.IsEnabled = false;
         }
 
         private void ActualiserListe()
@@ -108,6 +110,24 @@ namespace Program
             }
         }
 
+        private void ToggleEnable(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                Modify_Button.IsEnabled = true;
+                Ascending_Order_Radio.IsEnabled = true;
+                Descending_Order_Radio.IsEnabled = true;
+                Save_Button.IsEnabled = true;
+            }
+            else
+            {
+                Modify_Button.IsEnabled = false;
+                Ascending_Order_Radio.IsEnabled = false;
+                Descending_Order_Radio.IsEnabled = false;
+                Save_Button.IsEnabled = false;
+            }
+        }
+
         private void Read_File_Button_Click(object sender, RoutedEventArgs e)
         {
             bool? isDiagOpen = false;
@@ -122,33 +142,43 @@ namespace Program
 
             donneesContents.Clear();
 
-            using (StreamReader reader = new StreamReader(filepath))
-                while (!reader.EndOfStream)
-                    donneesContents.Add(reader.ReadLine());
+            if (filepath != "")
+            {
+                using (StreamReader reader = new StreamReader(filepath))
+                    while (!reader.EndOfStream)
+                        donneesContents.Add(reader.ReadLine());
+
+                ToggleEnable(true);
+            }
 
             ActualiserListe();
         }
 
         private void Quit_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult boxResult = MessageBox.Show("Voulez-vous sauvegarder?", "Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-            if (boxResult == MessageBoxResult.Yes)
-                Sauvegarder();
-            else if (boxResult == MessageBoxResult.Cancel)
-                return;
+            if (Display_Box.HasItems)
+            {
+                MessageBoxResult boxResult = MessageBox.Show("Voulez-vous sauvegarder?", "Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (boxResult == MessageBoxResult.Yes)
+                    Sauvegarder();
+                else if (boxResult == MessageBoxResult.Cancel)
+                    return;
+            }
             Application.Current.Shutdown();
         }
 
         private void Display_Box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string[] currentLine = new string[10];
+            string[] currentLine = new string[3];
             try
             {
                 currentLine = Display_Box.SelectedItem.ToString().Split(' ');
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
+
+            if (currentLine[0] != "" && currentLine[0] != null)
+                Delete_Button.IsEnabled = true;
+
             Name_Textbox.Text = currentLine[0];
             Fam_Name_Textbox.Text = currentLine[1];
             Expenses_Textbox.Text = currentLine[2];
@@ -159,9 +189,9 @@ namespace Program
             string toAdd = "";
 
             toAdd += Name_Textbox.Text + " " + Fam_Name_Textbox.Text + " " + Expenses_Textbox.Text;
-
             donneesContents.Add(toAdd);
-
+            if (Display_Box.HasItems)
+                ToggleEnable(true);
             ActualiserListe();
 
             Display_Box.SelectedIndex = Display_Box.Items.Count - 1;
@@ -193,6 +223,8 @@ namespace Program
             int index = Display_Box.SelectedIndex;
 
             donneesContents.RemoveAt(index);
+            if (!Display_Box.HasItems)
+                ToggleEnable(false);
 
             ActualiserListe();
 
@@ -204,14 +236,24 @@ namespace Program
 
         private void Ascending_Order_Radio_Checked(object sender, RoutedEventArgs e)
         {
-            QuicksortC(ref donneesContents, 0, donneesContents.Count - 1);
-            ActualiserListe(); 
+            if (donneesContents.Count > 0)
+            {
+                QuicksortC(ref donneesContents, 0, donneesContents.Count - 1);
+                ActualiserListe();
+            }
+            else
+                Ascending_Order_Radio.IsChecked = false;
         }
 
         private void Descending_Order_Radio_Checked(object sender, RoutedEventArgs e)
         {
-            QuicksortD(ref donneesContents, 0, donneesContents.Count - 1);
-            ActualiserListe();
+            if (donneesContents.Count > 0)
+            {
+                QuicksortD(ref donneesContents, 0, donneesContents.Count - 1);
+                ActualiserListe();
+            }
+            else
+                Descending_Order_Radio.IsChecked = false;
         }
 
         private void Save_Button_Click(object sender, RoutedEventArgs e)
@@ -221,6 +263,60 @@ namespace Program
             isDiagOpen = fileDiag.ShowDialog();
             filepath = fileDiag.FileName;
             Sauvegarder();
+        }
+
+        private void Name_Textbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (Name_Textbox.Text == "" || Name_Textbox.Text.Contains(" ") || Fam_Name_Textbox.Text == "" || Fam_Name_Textbox.Text.Contains(" ") || Expenses_Textbox.Text == "" || Expenses_Textbox.Text.Contains(" "))
+                {
+                    Add_Button.IsEnabled = false;
+                    Modify_Button.IsEnabled = false;
+                }
+                else
+                {
+                    Add_Button.IsEnabled = true;
+                    Modify_Button.IsEnabled = true;
+                }
+            }
+            catch (Exception) { }
+        }
+
+        private void Fam_Name_Textbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (Name_Textbox.Text == "" || Name_Textbox.Text.Contains(" ") || Fam_Name_Textbox.Text == "" || Fam_Name_Textbox.Text.Contains(" ") || Expenses_Textbox.Text == "" || Expenses_Textbox.Text.Contains(" "))
+                {
+                    Add_Button.IsEnabled = false;
+                    Modify_Button.IsEnabled = false;
+                }
+                else
+                {
+                    Add_Button.IsEnabled = true;
+                    Modify_Button.IsEnabled = true;
+                }
+            }
+            catch (Exception) { }
+        }
+
+        private void Expenses_Textbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (Name_Textbox.Text == "" || Name_Textbox.Text.Contains(" ") || Fam_Name_Textbox.Text == "" || Fam_Name_Textbox.Text.Contains(" ") || Expenses_Textbox.Text == "" || Expenses_Textbox.Text.Contains(" "))
+                {
+                    Add_Button.IsEnabled = false;
+                    Modify_Button.IsEnabled = false;
+                }
+                else
+                {
+                    Add_Button.IsEnabled = true;
+                    Modify_Button.IsEnabled = true;
+                }
+            }
+            catch (Exception) { }
         }
     }
 }

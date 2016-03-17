@@ -9,9 +9,9 @@
         <Button x:Name="Add_Button" Content="Ajouter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="383,108,0,0" Height="25" Click="Add_Button_Click"/>
         <Button x:Name="Read_File_Button" Content="Ouvrir..." HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="383,409,0,0" Click="Read_File_Button_Click"/>
         <TextBox x:Name="Filepath_Textbox" HorizontalAlignment="Left" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Margin="475,409,0,0" IsManipulationEnabled="True"/>
-        <TextBox x:Name="Expenses_Textbox" HorizontalAlignment="Left" Height="27" TextWrapping="Wrap" Text="Dépense" VerticalAlignment="Top" Width="270" Margin="383,76,0,0"/>
-        <TextBox x:Name="Fam_Name_Textbox" HorizontalAlignment="Left" Height="27" TextWrapping="Wrap" Text="Nom" VerticalAlignment="Top" Width="270" Margin="383,44,0,0"/>
-        <TextBox x:Name="Name_Textbox" HorizontalAlignment="Left" Height="26" TextWrapping="Wrap" Text="Prenom" VerticalAlignment="Top" Width="270" Margin="383,12,0,0"/>
+        <TextBox x:Name="Expenses_Textbox" HorizontalAlignment="Left" Height="27" TextWrapping="Wrap" Text="Dépense" VerticalAlignment="Top" Width="270" Margin="383,76,0,0" TextChanged="Expenses_Textbox_TextChanged"/>
+        <TextBox x:Name="Fam_Name_Textbox" HorizontalAlignment="Left" Height="27" TextWrapping="Wrap" Text="Nom" VerticalAlignment="Top" Width="270" Margin="383,44,0,0" TextChanged="Fam_Name_Textbox_TextChanged"/>
+        <TextBox x:Name="Name_Textbox" HorizontalAlignment="Left" Height="26" TextWrapping="Wrap" Text="Prenom" VerticalAlignment="Top" Width="270" Margin="383,12,0,0" TextChanged="Name_Textbox_TextChanged"/>
         <Button x:Name="Modify_Button" Content="Modifier" HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="475,108,0,0" Height="25" Click="Modify_Button_Click"/>
         <RadioButton x:Name="Ascending_Order_Radio" Content="Croissant" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="383,159,0,0" Checked="Ascending_Order_Radio_Checked"/>
         <RadioButton x:Name="Descending_Order_Radio" Content="Decroissant" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="383,180,0,0" Checked="Descending_Order_Radio_Checked"/>
