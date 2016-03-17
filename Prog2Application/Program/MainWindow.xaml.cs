@@ -23,6 +23,7 @@ namespace Program
     public partial class MainWindow : Window
     {
         string filepath = "";
+        bool abortStop = false;
         List<string> donneesContents = new List<string>(); //Contient les données du fichier de données
         public MainWindow()
         {
@@ -99,15 +100,17 @@ namespace Program
 
         private void Sauvegarder()
         {
-            if (donneesContents.Count > 0)
+            if (donneesContents.Count > 0 && filepath != "")
             {
                 using (StreamWriter writer = new StreamWriter(filepath))
                 {
                     foreach (string item in donneesContents)
                         writer.WriteLine(item);
                 }
-                
+
             }
+            else
+                abortStop = true;
         }
 
         private void ToggleEnable(bool isEnabled)
@@ -160,11 +163,19 @@ namespace Program
             {
                 MessageBoxResult boxResult = MessageBox.Show("Voulez-vous sauvegarder?", "Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (boxResult == MessageBoxResult.Yes)
+                {
+                    bool? isDiagOpen = false;
+                    SaveFileDialog fileDiag = new SaveFileDialog();
+                    isDiagOpen = fileDiag.ShowDialog();
+                    filepath = fileDiag.FileName;
                     Sauvegarder();
+                }
                 else if (boxResult == MessageBoxResult.Cancel)
-                    return;
+                    abortStop = true;
             }
-            Application.Current.Shutdown();
+            if (!abortStop)
+                Application.Current.Shutdown();
+            abortStop = false;
         }
 
         private void Display_Box_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -178,10 +189,21 @@ namespace Program
 
             if (currentLine[0] != "" && currentLine[0] != null)
                 Delete_Button.IsEnabled = true;
+            else
+                Delete_Button.IsEnabled = false;
+
 
             Name_Textbox.Text = currentLine[0];
             Fam_Name_Textbox.Text = currentLine[1];
             Expenses_Textbox.Text = currentLine[2];
+            try
+            {
+                if ((Name_Textbox.Text + " " + Fam_Name_Textbox.Text + " " + Expenses_Textbox.Text) == Display_Box.SelectedItem.ToString())
+                    Modify_Button.IsEnabled = false;
+                else
+                    Modify_Button.IsEnabled = true;
+            }
+            catch (Exception) { }
         }
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
@@ -192,12 +214,13 @@ namespace Program
             donneesContents.Add(toAdd);
             if (Display_Box.HasItems)
                 ToggleEnable(true);
+            
             ActualiserListe();
-
+            
             Display_Box.SelectedIndex = Display_Box.Items.Count - 1;
 
             Ascending_Order_Radio.IsChecked = false;
-            Descending_Order_Radio.IsChecked = false;
+            Descending_Order_Radio.IsChecked = false; 
         }
 
         private void Modify_Button_Click(object sender, RoutedEventArgs e)
@@ -206,13 +229,12 @@ namespace Program
             string toAdd = "";
 
 
-            toAdd += Name_Textbox.Text;
-            toAdd += " " + Fam_Name_Textbox.Text;
-            toAdd += " " + Expenses_Textbox.Text;
+            toAdd += Name_Textbox.Text + " " + Fam_Name_Textbox.Text + " " + Expenses_Textbox.Text;
 
             donneesContents[index] = toAdd;
 
             ActualiserListe();
+            Display_Box.SelectedItem = toAdd;
 
             Ascending_Order_Radio.IsChecked = false;
             Descending_Order_Radio.IsChecked = false;
