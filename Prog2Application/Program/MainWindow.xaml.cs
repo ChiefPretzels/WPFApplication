@@ -27,10 +27,10 @@ namespace Program
         List<string> donneesContents = new List<string>(); //Contient les données du fichier de données
         public MainWindow()
         {
-            InitializeComponent();
-            Filepath_Textbox.IsReadOnly = true;
-            ToggleEnable(false);
-            Delete_Button.IsEnabled = false;
+                InitializeComponent();
+                Filepath_Textbox.IsReadOnly = true;
+                ToggleEnable(false);
+                Delete_Button.IsEnabled = false;
         }
 
         private void ActualiserListe()
@@ -133,28 +133,32 @@ namespace Program
 
         private void Read_File_Button_Click(object sender, RoutedEventArgs e)
         {
-            bool? isDiagOpen = false;
-            OpenFileDialog fileDiag = new OpenFileDialog();
-            isDiagOpen = fileDiag.ShowDialog();
-
-            if (isDiagOpen == true)
+            try
             {
-                Filepath_Textbox.Text = fileDiag.FileName;
-                filepath = fileDiag.FileName;
+                bool? isDiagOpen = false;
+                OpenFileDialog fileDiag = new OpenFileDialog();
+                isDiagOpen = fileDiag.ShowDialog();
+
+                if (isDiagOpen == true)
+                {
+                    Filepath_Textbox.Text = fileDiag.FileName;
+                    filepath = fileDiag.FileName;
+                }
+
+                donneesContents.Clear();
+
+                if (filepath != "")
+                {
+                    using (StreamReader reader = new StreamReader(filepath))
+                        while (!reader.EndOfStream)
+                            donneesContents.Add(reader.ReadLine());
+
+                    ToggleEnable(true);
+                }
+
+                ActualiserListe();
             }
-
-            donneesContents.Clear();
-
-            if (filepath != "")
-            {
-                using (StreamReader reader = new StreamReader(filepath))
-                    while (!reader.EndOfStream)
-                        donneesContents.Add(reader.ReadLine());
-
-                ToggleEnable(true);
-            }
-
-            ActualiserListe();
+            catch (Exception y) { MessageBox.Show("Erreur", "", MessageBoxButton.OK); }
         }
 
         private void Quit_Button_Click(object sender, RoutedEventArgs e)

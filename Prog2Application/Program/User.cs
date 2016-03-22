@@ -9,23 +9,45 @@ namespace Program
     class User
     {
         //Vars
-        string name;
-        string famName;
-        double expense;
+        private string name;
+        private string famName;
+        private int nas;
+        private int nbPersoFam;
+        private DateTime dateNaiss;
+        private char statut;
+        private char sexe;
+        private double revenue;
+
         public string Name { get { return name; } set { name = value; } }
         public string FamName { get { return famName; } set { famName = value; } }
-        public double Expense { get { return expense; } set { expense = value; } }
+        public int Nas { get { return nas; } set { nas = value; } }
+        public int NbPersoFam { get { return nbPersoFam; } set { nbPersoFam = value; } }
+        public DateTime DateNaiss { get { return dateNaiss; } set { dateNaiss = value; } }
+        public char Statut { get { return statut; } set { statut = value; } }
+        public char Sexe { get { return sexe; } set { sexe = value; } }
+        public double Revenue { get { return revenue; } set { revenue = value; } }
+
         //Constructors
         public User()//Défaut
         {
-            name = "name";
-            famName = "famname";
-            expense = 0;
+            name = "bob";
+            famName = "lemon";
+            nas = 1337;
+            nbPersoFam = 9;
+            DateNaiss = DateTime.Today;
+            statut = 'd';
+            sexe = 'm';
+            revenue = 420;
         }
 
-        public User(User donnees)//Copie
+        public User(string name, string famName, int nas, DateTime dateNaiss, char statut, char sexe, double revenue, int nbPersoFam)
         {
-            new User();
+
+        }
+
+        public User(User donnees) : this(donnees.Name, donnees.FamName, donnees.Nas, donnees.DateNaiss, donnees.Statut, donnees.Sexe, donnees.Revenue, donnees.NbPersoFam)
+        {
+
         }
     }
 }
