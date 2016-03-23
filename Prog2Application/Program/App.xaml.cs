@@ -13,5 +13,12 @@ namespace Program
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            PasswordWindow passWindow = new PasswordWindow();
+            MainWindow mainWindow = new MainWindow();
+            passWindow.Title = "Password";
+            passWindow.Show();
+        }
     }
 }

@@ -15,13 +15,12 @@
         <RadioButton x:Name="Ascending_Order_Radio" Content="Croissant" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="729,142,0,0" Checked="Ascending_Order_Radio_Checked"/>
         <RadioButton x:Name="Descending_Order_Radio" Content="Decroissant" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="729,163,0,0" Checked="Descending_Order_Radio_Checked"/>
         <Button x:Name="Save_Button" Content="Sauvegarder..." HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="724,422,0,0" Click="Save_Button_Click"/>
-        <ListView HorizontalAlignment="Left" Height="461" Margin="10,10,0,0" VerticalAlignment="Top" Width="709">
+        <ListView x:Name="Display_Box" HorizontalAlignment="Left" Height="461" Margin="10,10,0,0" VerticalAlignment="Top" Width="709" SelectionChanged="ListView_SelectionChanged">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
+                    <GridViewColumn Width="120" DisplayMemberBinding="{Binding NAS}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-
     </Grid>
 </Window>

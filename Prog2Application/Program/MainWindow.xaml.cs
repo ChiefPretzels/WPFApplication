@@ -22,28 +22,22 @@ namespace Program
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Global vars
         string filepath = "";
         bool abortStop = false;
         List<string> donneesContents = new List<string>(); //Contient les données du fichier de données
+        List<User> items = new List<User>();
+
+        
         public MainWindow()
         {
-                InitializeComponent();
-                Filepath_Textbox.IsReadOnly = true;
-                ToggleEnable(false);
-                Delete_Button.IsEnabled = false;
+            InitializeComponent();
+            Filepath_Textbox.IsReadOnly = true;
+            ToggleEnable(false);
+            Delete_Button.IsEnabled = false;
         }
 
-        private void ActualiserListe()
-        {
-            Display_Box.Items.Clear();
-            foreach (string item in donneesContents)
-            {
-                string tmpString = "";
-                tmpString = item.Replace(';', ' ');
-                Display_Box.Items.Add(tmpString);
-            }
-        }
-
+        //Quicksorts, (C)roissant et (D)ecroissant
         private void QuicksortC(ref List<string> elements, int left, int right)
         {
             int i = left, j = right;
@@ -100,17 +94,22 @@ namespace Program
 
         private void Sauvegarder()
         {
-            if (donneesContents.Count > 0 && filepath != "")
+            try
             {
-                using (StreamWriter writer = new StreamWriter(filepath))
+                if (donneesContents.Count > 0 && filepath != "")
                 {
-                    foreach (string item in donneesContents)
-                        writer.WriteLine(item);
-                }
+                    using (StreamWriter writer = new StreamWriter(filepath))
+                    {
+                        foreach (string item in donneesContents)
+                            writer.WriteLine(item);
+                    }
 
+                }
+                else
+                    abortStop = true;
             }
-            else
-                abortStop = true;
+            catch (Exception e)
+            { MessageBox.Show("Erreur", "", MessageBoxButton.OK); }
         }
 
         private void ToggleEnable(bool isEnabled)
@@ -139,24 +138,26 @@ namespace Program
                 OpenFileDialog fileDiag = new OpenFileDialog();
                 isDiagOpen = fileDiag.ShowDialog();
 
+                //Set the filepath display box (is read-only)
                 if (isDiagOpen == true)
                 {
                     Filepath_Textbox.Text = fileDiag.FileName;
                     filepath = fileDiag.FileName;
                 }
 
-                donneesContents.Clear();
+                items.Clear();
 
                 if (filepath != "")
                 {
                     using (StreamReader reader = new StreamReader(filepath))
                         while (!reader.EndOfStream)
-                            donneesContents.Add(reader.ReadLine());
+                        {
+                            string currentLine = reader.ReadLine();
+                            items.Add(new User() { Nas = int.Parse(currentLine.Split(';')[0]), FamName = currentLine.Split(';')[1], Name = currentLine.Split(';')[2], });
+                        }
 
                     ToggleEnable(true);
                 }
-
-                ActualiserListe();
             }
             catch (Exception y) { MessageBox.Show("Erreur", "", MessageBoxButton.OK); }
         }
@@ -219,8 +220,6 @@ namespace Program
             if (Display_Box.HasItems)
                 ToggleEnable(true);
             
-            ActualiserListe();
-            
             Display_Box.SelectedIndex = Display_Box.Items.Count - 1;
 
             Ascending_Order_Radio.IsChecked = false;
@@ -237,7 +236,6 @@ namespace Program
 
             donneesContents[index] = toAdd;
 
-            ActualiserListe();
             Display_Box.SelectedItem = toAdd;
 
             Ascending_Order_Radio.IsChecked = false;
@@ -251,8 +249,7 @@ namespace Program
             donneesContents.RemoveAt(index);
             if (!Display_Box.HasItems)
                 ToggleEnable(false);
-
-            ActualiserListe();
+            
 
             if (index == Display_Box.Items.Count)
                 Display_Box.SelectedIndex = index - 1;
@@ -265,7 +262,6 @@ namespace Program
             if (donneesContents.Count > 0)
             {
                 QuicksortC(ref donneesContents, 0, donneesContents.Count - 1);
-                ActualiserListe();
             }
             else
                 Ascending_Order_Radio.IsChecked = false;
@@ -276,7 +272,6 @@ namespace Program
             if (donneesContents.Count > 0)
             {
                 QuicksortD(ref donneesContents, 0, donneesContents.Count - 1);
-                ActualiserListe();
             }
             else
                 Descending_Order_Radio.IsChecked = false;
@@ -343,6 +338,11 @@ namespace Program
                 }
             }
             catch (Exception) { }
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
